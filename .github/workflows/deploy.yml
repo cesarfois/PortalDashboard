@@ -18,12 +18,24 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
-            # Navigate to application directory (adjust path on your VPS if needed)
-            cd /app/portal-dashboard || exit 1
+            # If the application directory does not exist, create it and clone the repository
+            if [ ! -d "/app/portal-dashboard" ]; then
+              mkdir -p /app
+              cd /app
+              git clone https://github.com/cesarfois/PortalDashboard.git portal-dashboard
+            fi
             
-            # Pull the latest changes
+            # Go to the application directory
+            cd /app/portal-dashboard
+            
+            # Pull the latest code
             git pull origin main
+            
+            # Create required external networks if they don't exist
+            docker network create pedidodecompradematerial_default || true
+            docker network create pedidodepagamento_default || true
             
             # Rebuild and restart the containers
             docker compose down
             docker compose up -d --build
+
