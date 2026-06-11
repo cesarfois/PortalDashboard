@@ -42,12 +42,6 @@ services:
       - default
     restart: always
 
-  dashboard-compras:
-    build: ./dashboard-compras
-    container_name: portal_dashboard_compras
-    networks:
-      - default
-    restart: always
 
 networks:
   default:
