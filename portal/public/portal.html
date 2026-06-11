@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Dashboards</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">P</div>
+      <span class="logo-text">Dashboard Portal</span>
+    </div>
+    <div class="nav-actions">
+      <div class="user-badge">
+        <span class="avatar-dot"></span>
+        <span id="userName">Carregando...</span>
+      </div>
+      <a href="/admin" id="adminBtn" class="btn btn-secondary" style="display: none;">
+        <span>Painel Admin</span>
+      </a>
+      <button id="logoutBtn" class="btn btn-danger">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="glass-panel">
+      <h1 class="page-title">Bem-vindo ao Portal de Gestão</h1>
+      <p class="page-subtitle">Selecione o dashboard abaixo para acessar as informações operacionais.</p>
+
+      <div id="noAccessMessage" style="display: none; text-align: center; padding: 3rem 1rem; color: var(--text-secondary);">
+        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🔒</span>
+        <h3>Nenhum painel liberado</h3>
+        <p style="margin-top: 0.5rem;">Você ainda não possui permissões atribuídas. Solicite acesso ao administrador.</p>
+      </div>
+
+      <div id="dashboardsGrid" class="dashboard-grid">
+        <!-- Dashboard Compra de Material -->
+        <div id="card-compras" class="dash-card compras" style="display: none;" onclick="window.location.href='/compras/'">
+          <div class="card-header">
+            <div class="card-icon-wrapper">📦</div>
+          </div>
+          <div class="card-body">
+            <h3>Compra de Material</h3>
+            <p>Controle de aquisições, requisições pendentes, orçamentos, cotações e custos de insumos por fornecedor.</p>
+          </div>
+          <div class="card-footer">
+            Acessar Dashboard &rarr;
+          </div>
+        </div>
+
+        <!-- Dashboard Pedido de Pagamento -->
+        <div id="card-pagamentos" class="dash-card pagamentos" style="display: none;" onclick="window.location.href='/pagamentos/'">
+          <div class="card-header">
+            <div class="card-icon-wrapper">💸</div>
+          </div>
+          <div class="card-body">
+            <h3>Pedido de Pagamento</h3>
+            <p>Fluxo de aprovação de pagamentos, reembolsos, prestação de contas de viagens e status de liquidação de despesas.</p>
+          </div>
+          <div class="card-footer">
+            Acessar Dashboard &rarr;
+          </div>
+        </div>
+
+        <!-- Dashboard Faturação de Serviços -->
+        <div id="card-faturacao" class="dash-card faturacao" style="display: none;" onclick="window.location.href='/faturacao-servicos/'">
+          <div class="card-header">
+            <div class="card-icon-wrapper">🧾</div>
+          </div>
+          <div class="card-body">
+            <h3>Faturação de Serviços</h3>
+            <p>Acompanhamento de emissão de notas fiscais, faturamento recorrente, contas a receber e prazos médios de cobrança.</p>
+          </div>
+          <div class="card-footer">
+            Acessar Dashboard &rarr;
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 Portal de Dashboards Internos. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    // Fetch logged-in user profile & permissions
+    async function loadDashboard() {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (!response.ok) {
+          window.location.href = '/login';
+          return;
+        }
+        
+        const data = await response.json();
+        if (!data.authenticated) {
+          window.location.href = '/login';
+          return;
+        }
+        
+        const { user } = data;
+        
+        // Show user details
+        document.getElementById('userName').textContent = `${user.name} (${user.is_admin ? 'Admin' : 'Usuário'})`;
+        
+        if (user.is_admin) {
+          document.getElementById('adminBtn').style.display = 'inline-flex';
+          // Admin has access to all dashboards
+          document.getElementById('card-compras').style.display = 'flex';
+          document.getElementById('card-pagamentos').style.display = 'flex';
+          document.getElementById('card-faturacao').style.display = 'flex';
+        } else {
+          let visibleCards = 0;
+          if (user.permissions.includes('compras')) {
+            document.getElementById('card-compras').style.display = 'flex';
+            visibleCards++;
+          }
+          if (user.permissions.includes('pagamentos')) {
+            document.getElementById('card-pagamentos').style.display = 'flex';
+            visibleCards++;
+          }
+          if (user.permissions.includes('faturacao')) {
+            document.getElementById('card-faturacao').style.display = 'flex';
+            visibleCards++;
+          }
+          
+          if (visibleCards === 0) {
+            document.getElementById('noAccessMessage').style.display = 'block';
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+        window.location.href = '/login';
+      }
+    }
+
+    // Logout handling
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/auth/logout', { method: 'POST' });
+        const data = await response.json();
+        if (data.redirect) {
+          window.location.href = data.redirect;
+        }
+      } catch (err) {
+        console.error('Error during logout:', err);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', loadDashboard);
+  </script>
+</body>
+</html>

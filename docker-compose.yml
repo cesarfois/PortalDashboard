@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: ./nginx
+    container_name: portal_nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - portal
+      - dashboard-pagamentos
+      - dashboard-faturacao
+    networks:
+      - default
+      - compras_net
+      - pagamentos_net
+    restart: always
+
+  portal:
+    build: ./portal
+    container_name: portal_backend
+    volumes:
+      - ./portal/data:/usr/src/app/data
+    environment:
+      - PORT=3000
+      - COOKIE_SECRET=super-secure-portal-key-13579
+    networks:
+      - default
+    restart: always
+
+  dashboard-pagamentos:
+    build: ./dashboard-pagamentos
+    container_name: portal_dashboard_pagamentos
+    networks:
+      - default
+    restart: always
+
+  dashboard-faturacao:
+    build: ./dashboard-faturacao
+    container_name: portal_dashboard_faturacao
+    networks:
+      - default
+    restart: always
+
+networks:
+  default:
+  compras_net:
+    external: true
+    name: pedidodecompradematerial_default
+  pagamentos_net:
+    external: true
+    name: pedidodepagamento_default

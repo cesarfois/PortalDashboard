@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Dashboards - Administração</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">P</div>
+      <span class="logo-text">Dashboard Portal</span>
+      <span class="badge badge-info" style="margin-left: 0.5rem;">Painel Admin</span>
+    </div>
+    <div class="nav-actions">
+      <a href="/portal" class="btn btn-secondary">&larr; Voltar ao Portal</a>
+      <button id="logoutBtn" class="btn btn-danger">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="admin-layout">
+      <!-- Users list glass panel -->
+      <div class="glass-panel">
+        <div class="panel-header-actions">
+          <div>
+            <h2 style="font-size: 1.5rem; font-weight: 700;">Usuários Cadastrados</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">Gerencie perfis, senhas e permissões de acesso.</p>
+          </div>
+          <button onclick="prepareCreate()" class="btn btn-primary">+ Novo Usuário</button>
+        </div>
+
+        <div id="adminAlert" class="alert alert-danger" style="margin-bottom: 1rem;"></div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Usuário</th>
+                <th>Tipo</th>
+                <th>Status</th>
+                <th>Permissões</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Manage form sidebar -->
+      <div class="glass-panel sticky-form" id="formPanel">
+        <h3 class="form-title" id="formTitle">Novo Usuário</h3>
+        <form id="userForm">
+          <input type="hidden" id="userId">
+          
+          <div class="form-group">
+            <label for="formName">Nome Completo</label>
+            <input type="text" id="formName" class="input-control" required placeholder="Ex: João Silva">
+          </div>
+
+          <div class="form-group">
+            <label for="formUsername">Nome de Usuário (login)</label>
+            <input type="text" id="formUsername" class="input-control" required placeholder="Ex: joao.silva">
+          </div>
+
+          <!-- Password field (only required on creation) -->
+          <div class="form-group" id="passwordGroup">
+            <label for="formPassword">Senha</label>
+            <input type="password" id="formPassword" class="input-control" required placeholder="Mínimo 4 caracteres" minlength="4">
+          </div>
+
+          <label class="switch-label">
+            <span>Administrador</span>
+            <input type="checkbox" id="formIsAdmin" style="width: 20px; height: 20px; accent-color: var(--primary);">
+          </label>
+
+          <label class="switch-label" style="margin-bottom: 1.5rem;">
+            <span>Usuário Ativo</span>
+            <input type="checkbox" id="formIsActive" checked style="width: 20px; height: 20px; accent-color: var(--primary);">
+          </label>
+
+          <div class="form-group">
+            <label>Dashboards Autorizados</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" value="compras" class="permission-chk">
+                <span>Compra de Material</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" value="pagamentos" class="permission-chk">
+                <span>Pedido de Pagamento</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" value="faturacao" class="permission-chk">
+                <span>Faturação de Serviços</span>
+              </label>
+            </div>
+            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem; line-height: 1.3;">
+              * Administradores têm permissão de acesso irrestrito a todos os dashboards por padrão.
+            </small>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; margin-top: 2rem;">
+            <button type="button" onclick="resetForm()" class="btn btn-secondary" style="flex: 1;">Cancelar</button>
+            <button type="submit" class="btn btn-primary" style="flex: 1.5;">Salvar</button>
+          </div>
+        </form>
+
+        <!-- Password reset panel (only when editing) -->
+        <div id="passwordResetArea" class="password-reset-box" style="display: none;">
+          <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-secondary);">Redefinir Senha</h4>
+          <form id="passwordResetForm">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <input type="password" id="newPassword" class="input-control" required placeholder="Nova Senha" minlength="4">
+            </div>
+            <button type="submit" class="btn btn-secondary" style="width: 100%;">
+              Atualizar Senha
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 Portal de Dashboards Internos. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    let usersList = [];
+    const tableBody = document.getElementById('usersTableBody');
+    const alertDiv = document.getElementById('adminAlert');
+
+    async function fetchUsers() {
+      try {
+        const response = await fetch('/api/admin/users');
+        if (!response.ok) {
+          if (response.status === 403) {
+            window.location.href = '/portal';
+            return;
+          }
+          window.location.href = '/login';
+          return;
+        }
+        usersList = await response.json();
+        renderTable();
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        showError('Erro ao buscar usuários do banco de dados.');
+      }
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = '';
+      usersList.forEach(user => {
+        const tr = document.createElement('tr');
+        
+        const typeBadge = user.is_admin ? '<span class="badge badge-info">Admin</span>' : '<span class="badge badge-success" style="background: rgba(255,255,255,0.05); color: var(--text-secondary);">Comum</span>';
+        const statusBadge = user.is_active ? '<span class="badge badge-success">Ativo</span>' : '<span class="badge badge-danger">Inativo</span>';
+        
+        let permissionsContent = '';
+        if (user.is_admin) {
+          permissionsContent = '<span class="tag" style="border-color: var(--primary); color: #a5b4fc;">Todos (Admin)</span>';
+        } else if (user.permissions.length > 0) {
+          permissionsContent = `<div class="tag-list">${user.permissions.map(p => {
+            let label = p;
+            if (p === 'compras') label = 'Compras';
+            if (p === 'pagamentos') label = 'Pagamentos';
+            if (p === 'faturacao') label = 'Faturação';
+            return `<span class="tag">${label}</span>`;
+          }).join('')}</div>`;
+        } else {
+          permissionsContent = '<span style="color: var(--text-muted); font-size: 0.85rem;">Nenhum</span>';
+        }
+
+        tr.innerHTML = `
+          <td style="font-weight: 500;">${user.name}</td>
+          <td style="color: var(--text-secondary); font-family: monospace;">${user.username}</td>
+          <td>${typeBadge}</td>
+          <td>${statusBadge}</td>
+          <td>${permissionsContent}</td>
+          <td>
+            <div class="action-buttons">
+              <button onclick="prepareEdit(${user.id})" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                Editar
+              </button>
+            </div>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function resetForm() {
+      document.getElementById('userForm').reset();
+      document.getElementById('userId').value = '';
+      document.getElementById('formTitle').textContent = 'Novo Usuário';
+      document.getElementById('passwordGroup').style.display = 'block';
+      document.getElementById('formPassword').required = true;
+      document.getElementById('passwordResetArea').style.display = 'none';
+      document.getElementById('formUsername').disabled = false;
+      document.getElementById('formIsActive').checked = true;
+      
+      const pCheckboxes = document.querySelectorAll('.permission-chk');
+      pCheckboxes.forEach(chk => chk.checked = false);
+      
+      alertDiv.style.display = 'none';
+    }
+
+    function prepareCreate() {
+      resetForm();
+      document.getElementById('formName').focus();
+    }
+
+    function prepareEdit(id) {
+      const user = usersList.find(u => u.id === id);
+      if (!user) return;
+      
+      alertDiv.style.display = 'none';
+      
+      document.getElementById('formTitle').textContent = `Editar: ${user.username}`;
+      document.getElementById('userId').value = user.id;
+      document.getElementById('formName').value = user.name;
+      document.getElementById('formUsername').value = user.username;
+      document.getElementById('formUsername').disabled = true; // cannot change username
+      document.getElementById('formPassword').required = false;
+      document.getElementById('passwordGroup').style.display = 'none';
+      document.getElementById('formIsAdmin').checked = user.is_admin;
+      document.getElementById('formIsActive').checked = user.is_active;
+
+      const pCheckboxes = document.querySelectorAll('.permission-chk');
+      pCheckboxes.forEach(chk => {
+        chk.checked = user.permissions.includes(chk.value);
+      });
+
+      document.getElementById('passwordResetArea').style.display = 'block';
+      document.getElementById('formName').focus();
+    }
+
+    // Submit handler (Create or Update)
+    document.getElementById('userForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertDiv.style.display = 'none';
+
+      const userId = document.getElementById('userId').value;
+      const name = document.getElementById('formName').value;
+      const username = document.getElementById('formUsername').value;
+      const password = document.getElementById('formPassword').value;
+      const is_admin = document.getElementById('formIsAdmin').checked;
+      const is_active = document.getElementById('formIsActive').checked;
+      
+      const permissions = [];
+      document.querySelectorAll('.permission-chk:checked').forEach(chk => {
+        permissions.push(chk.value);
+      });
+
+      const isEdit = !!userId;
+      const url = isEdit ? `/api/admin/users/${userId}` : '/api/admin/users';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      const body = {
+        name,
+        is_admin,
+        is_active,
+        permissions
+      };
+
+      if (!isEdit) {
+        body.username = username;
+        body.password = password;
+      }
+
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          resetForm();
+          fetchUsers();
+        } else {
+          showError(data.error || 'Erro ao processar requisição.');
+        }
+      } catch (err) {
+        console.error('Error saving user:', err);
+        showError('Erro de rede ao salvar usuário.');
+      }
+    });
+
+    // Password reset form handler
+    document.getElementById('passwordResetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertDiv.style.display = 'none';
+
+      const userId = document.getElementById('userId').value;
+      const password = document.getElementById('newPassword').value;
+
+      if (!userId) return;
+
+      try {
+        const response = await fetch(`/api/admin/users/${userId}/password`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('newPassword').value = '';
+          alert('Senha atualizada com sucesso!');
+        } else {
+          showError(data.error || 'Erro ao redefinir a senha.');
+        }
+      } catch (err) {
+        showError('Erro ao redefinir a senha.');
+      }
+    });
+
+    function showError(msg) {
+      alertDiv.textContent = msg;
+      alertDiv.style.display = 'block';
+    }
+
+    // Logout handling
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/auth/logout', { method: 'POST' });
+        const data = await response.json();
+        if (data.redirect) {
+          window.location.href = data.redirect;
+        }
+      } catch (err) {
+        console.error('Error during logout:', err);
+      }
+    });
+
+    // Page Load
+    window.addEventListener('DOMContentLoaded', fetchUsers);
+  </script>
+</body>
+</html>

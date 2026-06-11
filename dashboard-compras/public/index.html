@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Compra de Material</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 100%);
+      --panel-bg: rgba(31, 41, 55, 0.45);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding-bottom: 2rem;
+    }
+    header {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .badge {
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .btn-back {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--panel-border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+    .btn-back:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateX(-3px);
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .glass-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .metric-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--panel-border);
+      padding: 1.5rem;
+      border-radius: 12px;
+    }
+    .metric-card h4 {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .metric-card p {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 768px) {
+      .chart-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .chart-container {
+      background: rgba(10, 15, 30, 0.4);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      min-height: 320px;
+    }
+    .chart-container h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-title">
+      <span style="font-size: 1.5rem;">📦</span>
+      <h2 style="font-size: 1.25rem;">Compra de Material</h2>
+      <span class="badge">Painel de Compras</span>
+    </div>
+    <a href="/portal" class="btn-back">&larr; Voltar ao Portal</a>
+  </header>
+
+  <main class="container">
+    <div class="glass-panel">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h4>Total de Ordens Emitidas</h4>
+          <p>142</p>
+        </div>
+        <div class="metric-card">
+          <h4>Volume Financeiro (Mês)</h4>
+          <p>R$ 284.500,00</p>
+        </div>
+        <div class="metric-card">
+          <h4>Aprovações Pendentes</h4>
+          <p style="color: #fca5a5;">18</p>
+        </div>
+        <div class="metric-card">
+          <h4>Fornecedores Ativos</h4>
+          <p style="color: #34d399;">34</p>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-container">
+          <h3>Gastos por Categoria (Top 5)</h3>
+          <canvas id="categoryChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Tendência de Compras Mensais</h3>
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Styling constants for charts
+    const gridColor = 'rgba(255, 255, 255, 0.05)';
+    const textColor = '#9ca3af';
+
+    // Set default Chart.js styling
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = gridColor;
+
+    // Category Chart
+    const ctxCat = document.getElementById('categoryChart').getContext('2d');
+    new Chart(ctxCat, {
+      type: 'doughnut',
+      data: {
+        labels: ['Materia Prima', 'Equipamento TI', 'Escritório', 'Manutenção', 'Serviços Terceiros'],
+        datasets: [{
+          data: [120000, 64000, 15000, 35000, 50500],
+          backgroundColor: [
+            '#6366f1',
+            '#a855f7',
+            '#ec4899',
+            '#eab308',
+            '#14b8a6'
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+
+    // Trend Chart
+    const ctxTrend = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctxTrend, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+        datasets: [{
+          label: 'Total de Compras (R$)',
+          data: [150000, 180000, 210000, 175000, 240000, 284500],
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { grid: { color: gridColor }, ticks: { color: textColor } },
+          x: { grid: { color: gridColor }, ticks: { color: textColor } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Dashboards - Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="glass-panel login-card">
+      <div class="login-header">
+        <div class="logo-container" style="justify-content: center; margin-bottom: 1rem;">
+          <div class="logo-icon">P</div>
+          <span class="logo-text" style="font-size: 1.5rem; font-weight: 700;">Dashboard Portal</span>
+        </div>
+        <h1>Acesso ao Sistema</h1>
+        <p>Insira suas credenciais para continuar</p>
+      </div>
+
+      <div id="loginAlert" class="alert alert-danger"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Usuário</label>
+          <input type="text" id="username" class="input-control" placeholder="Ex: admin" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <input type="password" id="password" class="input-control" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.8rem;">
+          Entrar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Portal de Dashboards Internos. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const alertDiv = document.getElementById('loginAlert');
+      
+      alertDiv.style.display = 'none';
+      
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+          window.location.href = data.redirect;
+        } else {
+          alertDiv.textContent = data.error || 'Erro ao efetuar o login.';
+          alertDiv.style.display = 'block';
+        }
+      } catch (err) {
+        alertDiv.textContent = 'Erro de rede ou servidor indisponível.';
+        alertDiv.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
