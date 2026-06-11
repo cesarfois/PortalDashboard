@@ -32,7 +32,7 @@ jobs:
             git pull origin main
             
             # Create required external networks if they don't exist
-            docker network create pedidodecompradematerial_default || true
+            docker network create pedido-compra-material_default || true
             docker network create pedidodepagamento_default || true
             
             # Rebuild and restart the containers
