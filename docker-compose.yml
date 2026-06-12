@@ -8,8 +8,6 @@ services:
       - "80:80"
     depends_on:
       - portal
-      - dashboard-pagamentos
-      - dashboard-faturacao
     networks:
       - default
       - compras_net
