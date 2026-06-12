@@ -47,7 +47,7 @@ networks:
   default:
   compras_net:
     external: true
-    name: pedido-compra-material_default
+    name: pedidodecompradematerial_default
   pagamentos_net:
     external: true
     name: pedidodepagamento_default
