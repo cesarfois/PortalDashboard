@@ -14,6 +14,7 @@ services:
       - default
       - compras_net
       - pagamentos_net
+      - faturacao_net
     restart: always
 
   portal:
@@ -28,20 +29,6 @@ services:
       - default
     restart: always
 
-  dashboard-pagamentos:
-    build: ./dashboard-pagamentos
-    container_name: portal_dashboard_pagamentos
-    networks:
-      - default
-    restart: always
-
-  dashboard-faturacao:
-    build: ./dashboard-faturacao
-    container_name: portal_dashboard_faturacao
-    networks:
-      - default
-    restart: always
-
 
 networks:
   default:
@@ -51,3 +38,6 @@ networks:
   pagamentos_net:
     external: true
     name: pedidodepagamento_default
+  faturacao_net:
+    external: true
+    name: facturacaodeservicos_default
