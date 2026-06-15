@@ -233,6 +233,8 @@ app.get('/api/auth/verify', (req, res) => {
       reqDashboard = 'pagamentos';
     } else if (originalUri.startsWith('/faturacao-servicos')) {
       reqDashboard = 'faturacao';
+    } else if (originalUri.startsWith('/pedido-de-transporte')) {
+      reqDashboard = 'transporte';
     }
 
     // If requested URI is not matching one of the controlled dashboards, deny by default or adjust as needed

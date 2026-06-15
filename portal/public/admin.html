@@ -99,6 +99,10 @@
                 <input type="checkbox" value="faturacao" class="permission-chk">
                 <span>Faturação de Serviços</span>
               </label>
+              <label class="checkbox-label">
+                <input type="checkbox" value="transporte" class="permission-chk">
+                <span>Pedido de Transporte</span>
+              </label>
             </div>
             <small style="color: var(--text-muted); display: block; margin-top: 0.5rem; line-height: 1.3;">
               * Administradores têm permissão de acesso irrestrito a todos os dashboards por padrão.
@@ -172,6 +176,7 @@
             if (p === 'compras') label = 'Compras';
             if (p === 'pagamentos') label = 'Pagamentos';
             if (p === 'faturacao') label = 'Faturação';
+            if (p === 'transporte') label = 'Transporte';
             return `<span class="tag">${label}</span>`;
           }).join('')}</div>`;
         } else {

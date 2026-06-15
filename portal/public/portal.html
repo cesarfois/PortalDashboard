@@ -77,6 +77,20 @@
             Abrir Workflow &rarr;
           </div>
         </div>
+
+        <!-- Dashboard Pedido de Transporte -->
+        <div id="card-transporte" class="dash-card transporte" style="display: none;" onclick="window.location.href='/pedido-de-transporte/'">
+          <div class="card-header">
+            <div class="card-icon-wrapper">🚗</div>
+          </div>
+          <div class="card-body">
+            <h3>Pedido de Transporte</h3>
+            <p>Acompanhamento das solicitações internas de transporte, incluindo o registro do pedido, aprovação pelos responsáveis, conhecimento pela equipa responsável e acompanhamento da pesquisa de satisfação após a conclusão do serviço.</p>
+          </div>
+          <div class="card-footer">
+            Abrir Workflow &rarr;
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -112,6 +126,7 @@
           document.getElementById('card-compras').style.display = 'flex';
           document.getElementById('card-pagamentos').style.display = 'flex';
           document.getElementById('card-faturacao').style.display = 'flex';
+          document.getElementById('card-transporte').style.display = 'flex';
         } else {
           let visibleCards = 0;
           if (user.permissions.includes('compras')) {
@@ -124,6 +139,10 @@
           }
           if (user.permissions.includes('faturacao')) {
             document.getElementById('card-faturacao').style.display = 'flex';
+            visibleCards++;
+          }
+          if (user.permissions.includes('transporte')) {
+            document.getElementById('card-transporte').style.display = 'flex';
             visibleCards++;
           }
           
