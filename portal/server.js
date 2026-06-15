@@ -229,7 +229,7 @@ app.get('/api/auth/verify', (req, res) => {
 
     if (originalUri.startsWith('/compras')) {
       reqDashboard = 'compras';
-    } else if (originalUri.startsWith('/pagamentos')) {
+    } else if (originalUri.startsWith('/pedido-de-pagamento') || originalUri.startsWith('/pagamentos')) {
       reqDashboard = 'pagamentos';
     } else if (originalUri.startsWith('/faturacao-servicos')) {
       reqDashboard = 'faturacao';
