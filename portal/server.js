@@ -92,8 +92,8 @@ function requireAuth(req, res, next) {
 
   db.get('SELECT * FROM users WHERE id = ? AND is_active = 1', [userId], (err, user) => {
     if (err || !user) {
-      res.clearCookie('userId');
-      res.clearCookie('username');
+      res.clearCookie('userId', { domain: '.processcloud.app' });
+      res.clearCookie('username', { domain: '.processcloud.app' });
       return res.status(401).redirect('/login');
     }
     req.user = user;
@@ -161,7 +161,8 @@ app.post('/api/auth/login', (req, res) => {
     const cookieOptions = {
       httpOnly: true,
       signed: true,
-      maxAge: 24 * 60 * 60 * 1000 // 1 day
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      domain: '.processcloud.app'
     };
     res.cookie('userId', user.id, cookieOptions);
     res.cookie('username', user.username, cookieOptions);
@@ -171,8 +172,8 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  res.clearCookie('userId');
-  res.clearCookie('username');
+  res.clearCookie('userId', { domain: '.processcloud.app' });
+  res.clearCookie('username', { domain: '.processcloud.app' });
   res.json({ success: true, redirect: '/login' });
 });
 
@@ -224,10 +225,13 @@ app.get('/api/auth/verify', (req, res) => {
     }
 
     // Identify which dashboard the user is requesting
+    const originalHost = req.headers['x-original-host'] || '';
     const originalUri = req.headers['x-original-uri'] || '';
     let reqDashboard = null;
 
-    if (originalUri.startsWith('/compras')) {
+    if (originalHost === 'learn.processcloud.app') {
+      reqDashboard = 'learn';
+    } else if (originalUri.startsWith('/compras')) {
       reqDashboard = 'compras';
     } else if (originalUri.startsWith('/pedido-de-pagamento') || originalUri.startsWith('/pagamentos')) {
       reqDashboard = 'pagamentos';

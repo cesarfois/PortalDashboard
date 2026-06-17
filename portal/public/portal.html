@@ -92,6 +92,20 @@
             Abrir Workflow &rarr;
           </div>
         </div>
+
+        <!-- Dashboard ProcessCloud Learn -->
+        <div id="card-learn" class="dash-card learn" style="display: none;" onclick="window.location.href='https://learn.processcloud.app'">
+          <div class="card-header">
+            <div class="card-icon-wrapper">🎓</div>
+          </div>
+          <div class="card-body">
+            <h3>ProcessCloud Learn</h3>
+            <p>Portal de aprendizado e onboarding de novos utilizadores. Aceda aos tutoriais, vídeos de demonstração e guias passo-a-passo da plataforma.</p>
+          </div>
+          <div class="card-footer">
+            Aceder ao Portal &rarr;
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -128,6 +142,7 @@
           document.getElementById('card-pagamentos').style.display = 'flex';
           document.getElementById('card-faturacao').style.display = 'flex';
           document.getElementById('card-transporte').style.display = 'flex';
+          document.getElementById('card-learn').style.display = 'flex';
         } else {
           let visibleCards = 0;
           if (user.permissions.includes('compras')) {
@@ -144,6 +159,10 @@
           }
           if (user.permissions.includes('transporte')) {
             document.getElementById('card-transporte').style.display = 'flex';
+            visibleCards++;
+          }
+          if (user.permissions.includes('learn')) {
+            document.getElementById('card-learn').style.display = 'flex';
             visibleCards++;
           }
           
