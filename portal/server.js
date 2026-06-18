@@ -162,7 +162,9 @@ app.post('/api/auth/login', (req, res) => {
       httpOnly: true,
       signed: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
-      domain: '.processcloud.app'
+      domain: '.processcloud.app',
+      secure: true,
+      sameSite: 'lax'
     };
     res.cookie('userId', user.id, cookieOptions);
     res.cookie('username', user.username, cookieOptions);
