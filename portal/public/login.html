@@ -63,7 +63,9 @@
         const data = await response.json();
         
         if (response.ok && data.success) {
-          window.location.href = data.redirect;
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectUrl = urlParams.get('redirect');
+          window.location.href = redirectUrl ? redirectUrl : data.redirect;
         } else {
           alertDiv.textContent = data.error || 'Erro ao efetuar o login.';
           alertDiv.style.display = 'block';
