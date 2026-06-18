@@ -411,6 +411,38 @@ app.put('/api/admin/users/:id/password', requireAdmin, (req, res) => {
   );
 });
 
+app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
+  const userId = req.params.id;
+
+  // Prevent self-deletion
+  if (parseInt(userId) === req.user.id) {
+    return res.status(400).json({ error: 'Você não pode excluir a si mesmo.' });
+  }
+
+  db.serialize(() => {
+    db.run('BEGIN TRANSACTION');
+    db.run('DELETE FROM permissions WHERE user_id = ?', [userId], (err) => {
+      if (err) {
+        db.run('ROLLBACK');
+        return res.status(500).json({ error: 'Erro ao excluir permissões do usuário.' });
+      }
+      db.run('DELETE FROM users WHERE id = ?', [userId], (err) => {
+        if (err) {
+          db.run('ROLLBACK');
+          return res.status(500).json({ error: 'Erro ao excluir o usuário.' });
+        }
+        db.run('COMMIT', (commitErr) => {
+          if (commitErr) {
+            db.run('ROLLBACK');
+            return res.status(500).json({ error: 'Erro ao finalizar transação de exclusão.' });
+          }
+          res.json({ success: true });
+        });
+      });
+    });
+  });
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`Auth Portal server running on port ${PORT}`);

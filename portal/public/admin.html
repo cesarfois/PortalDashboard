@@ -200,6 +200,9 @@
               <button onclick="prepareEdit(${user.id})" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
                 Editar
               </button>
+              <button onclick="deleteUser(${user.id}, '${user.username}')" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                Excluir
+              </button>
             </div>
           </td>
         `;
@@ -251,6 +254,29 @@
 
       document.getElementById('passwordResetArea').style.display = 'block';
       document.getElementById('formName').focus();
+    }
+
+    async function deleteUser(id, username) {
+      if (!confirm(`Tem certeza que deseja excluir permanentemente o usuário "${username}"?`)) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/admin/users/${id}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+        if (response.ok) {
+          alert('Usuário excluído com sucesso!');
+          resetForm();
+          fetchUsers();
+        } else {
+          showError(data.error || 'Erro ao excluir usuário.');
+        }
+      } catch (err) {
+        console.error('Error deleting user:', err);
+        showError('Erro ao excluir usuário.');
+      }
     }
 
     // Submit handler (Create or Update)
