@@ -35,6 +35,7 @@ jobs:
             docker network create pedidodecompradematerial_default || true
             docker network create pedidodepagamento_default || true
             docker network create facturacaodeservicos_default || true
+            docker network create workflowkpianalytics_default || true
             
             # Rebuild and restart the containers
             docker compose down --remove-orphans
