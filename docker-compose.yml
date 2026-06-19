@@ -19,6 +19,7 @@ services:
       - compras_net
       - pagamentos_net
       - faturacao_net
+      - kpi_analytics_net
     restart: always
 
   portal:
@@ -49,3 +50,6 @@ networks:
   faturacao_net:
     external: true
     name: facturacaodeservicos_default
+  kpi_analytics_net:
+    external: true
+    name: workflowkpianalytics_default

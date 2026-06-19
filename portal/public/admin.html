@@ -105,6 +105,10 @@
                 <span>Pedido de Transporte</span>
               </label>
               <label class="checkbox-label">
+                <input type="checkbox" value="kpi-analytics" class="permission-chk">
+                <span>Análise de KPIs</span>
+              </label>
+              <label class="checkbox-label">
                 <input type="checkbox" value="learn" class="permission-chk">
                 <span>Centro de Conhecimento</span>
               </label>
@@ -182,6 +186,7 @@
             if (p === 'pagamentos') label = 'Pagamentos';
             if (p === 'faturacao') label = 'Faturação';
             if (p === 'transporte') label = 'Transporte';
+            if (p === 'kpi-analytics') label = 'Análise de KPIs';
             if (p === 'learn') label = 'Centro de Conhecimento';
             return `<span class="tag">${label}</span>`;
           }).join('')}</div>`;

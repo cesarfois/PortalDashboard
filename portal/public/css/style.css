@@ -16,6 +16,7 @@
   --card-bg-compras: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
   --card-bg-pagamentos: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
   --card-bg-faturacao: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  --card-bg-kpi-analytics: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
 }
 
 * {
@@ -307,6 +308,7 @@ header {
 .dash-card.compras::before { background: var(--card-bg-compras); }
 .dash-card.pagamentos::before { background: var(--card-bg-pagamentos); }
 .dash-card.faturacao::before { background: var(--card-bg-faturacao); }
+.dash-card.kpi-analytics::before { background: var(--card-bg-kpi-analytics); }
 
 .dash-card.compras:hover {
   box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
@@ -319,6 +321,10 @@ header {
 .dash-card.faturacao:hover {
   box-shadow: 0 12px 30px rgba(20, 184, 166, 0.15);
   border-color: rgba(20, 184, 166, 0.3);
+}
+.dash-card.kpi-analytics:hover {
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .card-header {
@@ -345,6 +351,7 @@ header {
 .compras .card-icon-wrapper { color: #818cf8; background: rgba(99, 102, 241, 0.1); }
 .pagamentos .card-icon-wrapper { color: #f472b6; background: rgba(236, 72, 153, 0.1); }
 .faturacao .card-icon-wrapper { color: #2dd4bf; background: rgba(20, 184, 166, 0.1); }
+.kpi-analytics .card-icon-wrapper { color: #fbbf24; background: rgba(245, 158, 11, 0.1); }
 
 .card-body {
   position: relative;
