@@ -51,6 +51,20 @@
           </div>
         </div>
 
+        <!-- Dashboard Importação -->
+        <div id="card-importacao" class="dash-card importacao" style="display: none;" onclick="window.location.href='/importacao/'">
+          <div class="card-header">
+            <div class="card-icon-wrapper">🚢</div>
+          </div>
+          <div class="card-body">
+            <h3>Importação</h3>
+            <p>Visão consolidada do processo de importação, permitindo o acompanhamento de todas as etapas, desde a colocação do pedido no exterior até a entrega final e desembaraço aduaneiro.</p>
+          </div>
+          <div class="card-footer">
+            Abrir Workflow &rarr;
+          </div>
+        </div>
+
         <!-- Dashboard Pedido de Pagamento -->
         <div id="card-pagamentos" class="dash-card pagamentos" style="display: none;" onclick="window.location.href='/pedido-de-pagamento/'">
           <div class="card-header">
@@ -153,6 +167,7 @@
           document.getElementById('adminBtn').style.display = 'inline-flex';
           // Admin has access to all dashboards
           document.getElementById('card-compras').style.display = 'flex';
+          document.getElementById('card-importacao').style.display = 'flex';
           document.getElementById('card-pagamentos').style.display = 'flex';
           document.getElementById('card-faturacao').style.display = 'flex';
           document.getElementById('card-transporte').style.display = 'flex';
@@ -162,6 +177,10 @@
           let visibleCards = 0;
           if (user.permissions.includes('compras')) {
             document.getElementById('card-compras').style.display = 'flex';
+            visibleCards++;
+          }
+          if (user.permissions.includes('importacao')) {
+            document.getElementById('card-importacao').style.display = 'flex';
             visibleCards++;
           }
           if (user.permissions.includes('pagamentos')) {

@@ -93,6 +93,10 @@
                 <span>Compra de Material</span>
               </label>
               <label class="checkbox-label">
+                <input type="checkbox" value="importacao" class="permission-chk">
+                <span>Processo de Importação</span>
+              </label>
+              <label class="checkbox-label">
                 <input type="checkbox" value="pagamentos" class="permission-chk">
                 <span>Pedido de Pagamento</span>
               </label>
@@ -183,6 +187,7 @@
           permissionsContent = `<div class="tag-list">${user.permissions.map(p => {
             let label = p;
             if (p === 'compras') label = 'Compras';
+            if (p === 'importacao') label = 'Importação';
             if (p === 'pagamentos') label = 'Pagamentos';
             if (p === 'faturacao') label = 'Faturação';
             if (p === 'transporte') label = 'Transporte';

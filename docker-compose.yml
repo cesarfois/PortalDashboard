@@ -20,6 +20,7 @@ services:
       - pagamentos_net
       - faturacao_net
       - kpi_analytics_net
+      - importacao_net
     restart: always
 
   portal:
@@ -53,3 +54,6 @@ networks:
   kpi_analytics_net:
     external: true
     name: workflowkpianalytics_default
+  importacao_net:
+    external: true
+    name: processodeimportacao_default
