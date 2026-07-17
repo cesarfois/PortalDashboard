@@ -21,6 +21,7 @@ services:
       - faturacao_net
       - kpi_analytics_net
       - importacao_net
+      - guiaderemessa_net
     restart: always
 
   portal:
@@ -57,3 +58,6 @@ networks:
   importacao_net:
     external: true
     name: processodeimportacao_default
+  guiaderemessa_net:
+    external: true
+    name: guiaderemessa-network

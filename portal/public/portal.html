@@ -121,6 +121,20 @@
           </div>
         </div>
 
+        <!-- Dashboard: Guia de Remessa -->
+        <div id="card-guiaderemessa" class="dash-card guiaderemessa" style="display: none;" onclick="window.location.href='/guiaderemessa/'">
+          <div class="card-header">
+            <div class="card-icon-wrapper">📑</div>
+          </div>
+          <div class="card-body">
+            <h3>Guia de Remessa</h3>
+            <p>Acompanhamento da emissão e controle das guias de remessa de materiais e equipamentos, integrando faturamento, expedição e recebimento.</p>
+          </div>
+          <div class="card-footer">
+            Abrir Workflow &rarr;
+          </div>
+        </div>
+
         <!-- Dashboard ProcessCloud Learn -->
         <div id="card-learn" class="dash-card learn" style="display: none;" onclick="window.open('https://learn.processcloud.app', '_blank')">
           <div class="card-header">
@@ -172,6 +186,7 @@
           document.getElementById('card-faturacao').style.display = 'flex';
           document.getElementById('card-transporte').style.display = 'flex';
           document.getElementById('card-kpi-analytics').style.display = 'flex';
+          document.getElementById('card-guiaderemessa').style.display = 'flex';
           document.getElementById('card-learn').style.display = 'flex';
         } else {
           let visibleCards = 0;
@@ -197,6 +212,10 @@
           }
           if (user.permissions.includes('kpi-analytics')) {
             document.getElementById('card-kpi-analytics').style.display = 'flex';
+            visibleCards++;
+          }
+          if (user.permissions.includes('guiaderemessa')) {
+            document.getElementById('card-guiaderemessa').style.display = 'flex';
             visibleCards++;
           }
           if (user.permissions.includes('learn')) {
